@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import br.com.todolistapi.todolist.model.Tarefa;
+import br.com.todolistapi.todolist.model.dto.TarefaResponse;
 import br.com.todolistapi.todolist.repository.TarefaRepository;
 
 @RestController
@@ -26,15 +26,17 @@ public class TarefaController {
 	private TarefaRepository tarefaRepository;
 	
 	@GetMapping
-	public List<Tarefa> listar() {
+	public List<TarefaResponse> listar() {
 		List<Tarefa> tarefas = tarefaRepository.findAll();
-		return tarefas;
+		return Tarefa.paraListDto(tarefas);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Tarefa adicionar(@RequestBody Tarefa tarefa) {
-		return tarefaRepository.save(tarefa);
+	public TarefaResponse adicionar(@RequestBody Tarefa tarefa) {
+		tarefaRepository.save(tarefa);
+		TarefaResponse tarefaResponse = tarefa.paraDto(tarefa.getId(), tarefa.getTitulo(), tarefa.getDescricao(), tarefa.getData());
+		return tarefaResponse;
 	}
 	
 	@PutMapping("/{tarefaId}")
