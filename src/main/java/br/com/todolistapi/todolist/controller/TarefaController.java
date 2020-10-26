@@ -2,6 +2,8 @@ package br.com.todolistapi.todolist.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import br.com.todolistapi.todolist.model.Tarefa;
 import br.com.todolistapi.todolist.model.dto.TarefaResponse;
 import br.com.todolistapi.todolist.repository.TarefaRepository;
@@ -30,24 +33,30 @@ public class TarefaController {
 		List<Tarefa> tarefas = tarefaRepository.findAll();
 		return Tarefa.paraListDto(tarefas);
 	}
-
+	@GetMapping("/{usuario_id}")
+	public List<TarefaResponse> todasTarefasPorUsuario(@PathVariable Long usuario_id){
+		List<Tarefa> tarefas = tarefaRepository.findAllByUsuario_id(usuario_id);
+		return Tarefa.paraListDto(tarefas);
+	}
+	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public TarefaResponse adicionar(@RequestBody Tarefa tarefa) {
+	public TarefaResponse adicionar(@RequestBody @Valid Tarefa tarefa) {
 		tarefaRepository.save(tarefa);
 		TarefaResponse tarefaResponse = tarefa.paraDto(tarefa.getId(), tarefa.getTitulo(), tarefa.getDescricao(), tarefa.getData());
 		return tarefaResponse;
 	}
 	
 	@PutMapping("/{tarefaId}")
-	public ResponseEntity<Tarefa> atualizar(@PathVariable Long tarefaId, @RequestBody Tarefa tarefa){
+	public ResponseEntity<TarefaResponse> atualizar(@PathVariable Long tarefaId, @RequestBody @Valid Tarefa tarefa){
 		if(!tarefaRepository.existsById(tarefaId)) {
 			return ResponseEntity.notFound().build();
 		}
 		
 		tarefa.setId(tarefaId);
 		tarefa = tarefaRepository.save(tarefa);
-		return ResponseEntity.ok(tarefa);
+		TarefaResponse tarefaResponse = tarefa.paraDto(tarefa.getId(), tarefa.getTitulo(), tarefa.getDescricao(), tarefa.getData());
+		return ResponseEntity.ok(tarefaResponse);
 	}
 	
 	@DeleteMapping("/{tarefaId}")

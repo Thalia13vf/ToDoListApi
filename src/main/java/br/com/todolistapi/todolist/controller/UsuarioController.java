@@ -2,6 +2,8 @@ package br.com.todolistapi.todolist.controller;
 
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,13 +45,13 @@ public class UsuarioController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public UsuarioResponse adicionar(@RequestBody Usuario usuario) {
+	public UsuarioResponse adicionar(@RequestBody @Valid Usuario usuario) {
 		usuarioService.salvar(usuario);
 		return usuario.paraDto(usuario.getNome(), usuario.getEmail());
 	}
 	
 	@PutMapping("/{usuarioId}")
-	public ResponseEntity<UsuarioResponse> atualizar(@PathVariable Long usuarioId, @RequestBody Usuario usuario){
+	public ResponseEntity<UsuarioResponse> atualizar(@PathVariable Long usuarioId, @RequestBody @Valid Usuario usuario){
 		if(!usuarioRepository.existsById(usuarioId)) {
 			return ResponseEntity.notFound().build();
 		}

@@ -1,9 +1,15 @@
 package br.com.todolistapi.todolist.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 import br.com.todolistapi.todolist.model.dto.UsuarioResponse;
 
@@ -13,11 +19,18 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotBlank
 	private String nome;
 	
+	@NotBlank
+	@Email
 	private String email;
 	
+	@NotBlank
 	private String senha;
+	
+	@OneToMany(mappedBy = "usuario")
+	private List<Tarefa> tarefas = new ArrayList<>(); 
 	
 	public Usuario() {}
 	public Usuario(String nome, String email) {
@@ -50,6 +63,12 @@ public class Usuario {
 		this.id = id;
 	}
 	
+	public List<Tarefa> getTarefas() {
+		return tarefas;
+	}
+	public void setTarefas(List<Tarefa> tarefas) {
+		this.tarefas = tarefas;
+	}
 	public UsuarioResponse paraDto(String nome, String email) {
 		UsuarioResponse response = new UsuarioResponse(this.nome, this.email);
 		return response;
