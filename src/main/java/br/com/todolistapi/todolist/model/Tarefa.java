@@ -17,12 +17,20 @@ public class Tarefa {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotBlank
+	
+	@NotBlank(message = "{titulo.not.blank}")
 	private String titulo;
-	@NotBlank
+	
+	@NotBlank(message = "{descricao.not.blank}")
 	private String descricao;
 	
 	private OffsetDateTime data;
+	
+	private StatusTarefa status;
+	
+	public Tarefa() {
+		this.status = StatusTarefa.ABERTA;
+	}
 	
 	@ManyToOne
 	@JoinColumn(name="usuario_id")
@@ -58,16 +66,39 @@ public class Tarefa {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
+
+	public StatusTarefa getStatus() {
+		return status;
+	}
+	public void setStatus(StatusTarefa status) {
+		this.status = status;
+	}
+	
+	private boolean validarFinalizacao(Tarefa tarefa) {
+		if(tarefa.getStatus().equals(StatusTarefa.ABERTA)) {
+			System.out.println("TAREFA ABERTA");
+			return true;
+			
+		}
+		return false;
+	}
+	
+	public void finalizarTarefa(Tarefa tarefa) {
+		boolean finalizada = validarFinalizacao(tarefa);
+		if(finalizada == true) {
+			tarefa.setStatus(StatusTarefa.FINALIZADA);
+		}
+	}
 	
 	public static List<TarefaResponse> paraListDto(List<Tarefa> lista){
 		
 		return lista.stream()
-				.map(tarefa -> tarefa.paraDto(tarefa.id, tarefa.titulo, tarefa.descricao, tarefa.data))
+				.map(tarefa -> tarefa.paraDto(tarefa.id, tarefa.titulo, tarefa.descricao, tarefa.data, tarefa.status))
 				.collect(Collectors.toList());
 	}
 	
-	public TarefaResponse paraDto(Long id, String titulo, String descricao, OffsetDateTime data) {
-		return new TarefaResponse(id, titulo, descricao, data);
+	public TarefaResponse paraDto(Long id, String titulo, String descricao, OffsetDateTime data, StatusTarefa status) {
+		return new TarefaResponse(id, titulo, descricao, data, status);
 	}
 	
 }

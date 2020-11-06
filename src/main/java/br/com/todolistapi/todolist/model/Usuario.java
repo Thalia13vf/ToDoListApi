@@ -19,14 +19,14 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank
+	@NotBlank(message = "{nome.not.blank}")
 	private String nome;
 	
-	@NotBlank
-	@Email
+	@NotBlank(message = "{email.not.blank}")
+	@Email(message = "{email.not.valid}")
 	private String email;
 	
-	@NotBlank
+	@NotBlank(message = "{senha.not.blank}")
 	private String senha;
 	
 	@OneToMany(mappedBy = "usuario")
